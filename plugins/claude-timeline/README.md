@@ -52,6 +52,9 @@ That's it — server starts, browser opens, dashboard renders. You can use it wi
 | `/timeline-stop` | Stop the server. |
 | `/timeline-setup` | Install the statusLine wrapper so the plugin captures rate-limit data first-party. Detects any existing statusLine command and chains through it. |
 | `/timeline-setup uninstall` | Remove the wrapper, restore your original `statusLine` command. |
+| `/timeline-autostart enable` | Install a launchd (macOS) or systemd-user (Linux) unit so the server starts at login and auto-restarts on crash. |
+| `/timeline-autostart disable` | Remove the unit. Manual `/timeline` still works. |
+| `/timeline-autostart status` | Show whether autostart is installed and active. |
 
 ## How the data flows
 
@@ -118,6 +121,19 @@ Auto-created with defaults on first server start:
 
 Restart the server (`/timeline-stop && /timeline`) after editing.
 
+## Lifecycle
+
+By default the server is **not** a system service — it's started by `/timeline` and runs as a detached `nohup` process.
+
+| Event | Without autostart | With `/timeline-autostart enable` |
+|-------|-------------------|-----------------------------------|
+| Exit Claude Code session | Server keeps running. New rate-limit data stops flowing (statusLine only fires while Claude Code is running). | Same. |
+| `/timeline-stop` | Server stops. Won't restart until you run `/timeline` again. | Server stops; **stays stopped** for the rest of the session (graceful exit), but the launchd/systemd unit will restart it on the next login. |
+| Server crashes | Stays down until you run `/timeline`. | Auto-restarts (`KeepAlive` with `SuccessfulExit=false` on macOS; `Restart=on-failure` on Linux). |
+| System restart | Server gone; run `/timeline` from inside Claude Code to bring it back. | Server starts automatically at next login. |
+
+**To survive logout on Linux:** `sudo loginctl enable-linger $USER` — without this, systemd-user units stop when your last session ends.
+
 ## Compatibility with claude-statusbar
 
 If you use [leeguooooo/claude-code-usage-bar](https://github.com/leeguooooo/claude-code-usage-bar):
@@ -144,6 +160,8 @@ Everything is local. Nothing is sent to any external service. Specifically:
 | `~/.cache/claude-timeline/last_stdin.json` | Captured rate-limit payload |
 | `~/.cache/claude-timeline/server.pid` | PID of the running server (cleaned up on stop) |
 | `~/.cache/claude-timeline/server.log` | Server stdout/stderr |
+| `~/Library/LaunchAgents/com.blaze.claude-timeline.plist` *(macOS)* | Autostart unit (only if `/timeline-autostart enable`) |
+| `~/.config/systemd/user/claude-timeline.service` *(Linux)* | Autostart unit (only if `/timeline-autostart enable`) |
 
 ## Troubleshooting
 
@@ -170,6 +188,7 @@ tail -f ~/.cache/claude-timeline/server.log
 ## Uninstall
 
 ```
+/timeline-autostart disable        # if you enabled it
 /timeline-setup uninstall          # restore original statusLine
 /timeline-stop                     # kill server
 /plugin uninstall claude-timeline@blaze-claude-plugins
