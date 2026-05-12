@@ -7,12 +7,12 @@ The user wants to manage autostart. Argument is `status` (default), `enable`, or
 Before running anything destructive (enable/disable), explain what will change:
 
 **Enable:**
-- **macOS:** writes `~/Library/LaunchAgents/com.blaze.claude-timeline.plist` and runs `launchctl load`. Server starts at login, restarts on crash. Graceful stop (via `/timeline-stop`) stays stopped until reboot.
+- **macOS:** writes `~/Library/LaunchAgents/com.blaze.claude-timeline.plist` and runs `launchctl load`. Server starts at login, restarts on crash. Graceful stop (via `/claude-timeline:timeline-stop`) stays stopped until reboot.
 - **Linux:** writes `~/.config/systemd/user/claude-timeline.service` and runs `systemctl --user enable --now`. Same behavior. Note: requires `loginctl enable-linger $USER` (run by user, requires sudo) for the service to stay alive after logout — mention this if relevant.
 - Any manually-started server will be stopped first to avoid port conflicts.
 
 **Disable:**
-- Unloads/disables the service and removes the unit file. Manual `/timeline` still works.
+- Unloads/disables the service and removes the unit file. Manual `/claude-timeline:timeline` still works.
 
 **Status:**
 - Prints platform, whether the unit file exists, and whether it's currently loaded/active.
