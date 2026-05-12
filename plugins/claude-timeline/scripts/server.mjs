@@ -4,16 +4,17 @@ import http from 'http'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import { buildSnapshot } from './analyze.mjs'
-import { readConfig, ensureCacheDir, PID_FILE } from './config.mjs'
+import { readConfig, ensureCacheDir, ensureConfig, PID_FILE, CONFIG_PATH } from './config.mjs'
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url))
 const WEB_DIR = path.join(__dirname, '..', 'web')
 
+ensureCacheDir()
+ensureConfig()
 const cfg = readConfig()
 const PORT = parseInt(process.env.PORT || cfg.port || 7373, 10)
-const REFRESH_MS = cfg.refresh_ms || 2500
+const REFRESH_MS = cfg.refresh_ms || 2000
 
-ensureCacheDir()
 fs.writeFileSync(PID_FILE, String(process.pid))
 
 const clients = new Set()
@@ -72,6 +73,7 @@ const server = http.createServer((req, res) => {
 server.listen(PORT, '127.0.0.1', () => {
   console.log(`claude-timeline server: http://localhost:${PORT}`)
   console.log(`source: ${cachedSnapshot?.dataSource || 'unknown'}`)
+  console.log(`config: ${CONFIG_PATH} (refresh_ms=${REFRESH_MS})`)
 })
 
 function shutdown() {

@@ -25,23 +25,33 @@ function readOurCache() {
   try { stat = fs.statSync(OUR_CACHE) } catch { return null }
   const j = readJsonSafe(OUR_CACHE)
   const rl = rateLimitFromStdin(j)
-  return rl ? { ...rl, cachedAt: stat.mtimeMs, sourceFile: OUR_CACHE } : null
+  if (!rl) return null
+  // Skip if the 5h window has already reset — our wrapper hasn't seen fresh stdin yet.
+  if (rl.resetsAt <= Date.now()) return null
+  return { ...rl, cachedAt: stat.mtimeMs, sourceFile: OUR_CACHE }
 }
 
 function readStatusbarCache() {
   if (!fs.existsSync(STATUSBAR_CACHE_DIR)) return null
-  let best = null
+  const now = Date.now()
+  const candidates = []
   for (const dir of fs.readdirSync(STATUSBAR_CACHE_DIR)) {
     const f = path.join(STATUSBAR_CACHE_DIR, dir, 'last_stdin.json')
-    try {
-      const stat = fs.statSync(f)
-      if (!best || stat.mtimeMs > best.mtimeMs) best = { f, mtimeMs: stat.mtimeMs }
-    } catch {}
+    let stat
+    try { stat = fs.statSync(f) } catch { continue }
+    const j = readJsonSafe(f)
+    const rl = rateLimitFromStdin(j)
+    if (!rl) continue
+    // Idle Claude Code sessions keep re-writing stale rate_limits to their cache, bumping mtime.
+    // Skip files whose 5h window has already reset — that data is from a previous window.
+    if (rl.resetsAt <= now) continue
+    candidates.push({ f, mtimeMs: stat.mtimeMs, rl })
   }
-  if (!best) return null
-  const j = readJsonSafe(best.f)
-  const rl = rateLimitFromStdin(j)
-  return rl ? { ...rl, cachedAt: best.mtimeMs, sourceFile: best.f } : null
+  if (!candidates.length) return null
+  // Prefer highest resets_at (newest window), then highest mtime (most recent refresh).
+  candidates.sort((a, b) => (b.rl.resetsAt - a.rl.resetsAt) || (b.mtimeMs - a.mtimeMs))
+  const best = candidates[0]
+  return { ...best.rl, cachedAt: best.mtimeMs, sourceFile: best.f }
 }
 
 export function resolveRateLimit(cfg = readConfig()) {

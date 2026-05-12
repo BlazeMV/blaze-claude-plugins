@@ -1,6 +1,10 @@
 {
   "name": "claude-timeline",
   "version": "0.1.0",
-  "description": "Live web dashboard of Claude Code 5h-session usage and per-prompt cost. Reads Anthropic rate-limit headers via a statusLine wrapper (independent cache).",
-  "author": { "name": "blaze" }
+  "description": "Live web dashboard of Claude Code 5h-session usage and per-prompt cost. Captures Anthropic rate-limit headers via a statusLine wrapper; optionally chains through any existing statusLine.",
+  "author": { "name": "BlazeMV", "url": "https://github.com/BlazeMV" },
+  "homepage": "https://github.com/BlazeMV/blaze-claude-plugins/tree/main/plugins/claude-timeline",
+  "repository": "https://github.com/BlazeMV/blaze-claude-plugins",
+  "license": "MIT",
+  "keywords": ["claude-code", "usage", "rate-limit", "dashboard", "monitoring", "statusline"]
 }

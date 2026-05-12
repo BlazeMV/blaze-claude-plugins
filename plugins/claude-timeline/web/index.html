@@ -87,6 +87,7 @@ function el(name, attrs, parent) {
 }
 function fmtDur(ms) { return `${Math.floor(ms/3600000)}h ${Math.floor((ms%3600000)/60000)}m` }
 function fmtTime(ts) { return new Date(ts).toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'}) }
+function fmtPct(p) { return p == null ? '—' : Math.round(p) + '%' }
 function showTip(e, lines) {
   while (tip.firstChild) tip.removeChild(tip.firstChild)
   for (const l of lines) {
@@ -106,10 +107,10 @@ function hideTip() { tip.style.display = 'none' }
 window.addEventListener('mousemove', e => { if (tip.style.display === 'block') positionTip(e) })
 
 function renderHeader() {
-  document.getElementById('s-pct').textContent = D.currentPct != null ? D.currentPct + '%' : '—'
+  document.getElementById('s-pct').textContent = fmtPct(D.currentPct)
   if (D.sevenDayPct != null) {
     document.getElementById('s-7d-wrap').style.display = ''
-    document.getElementById('s-7d').textContent = D.sevenDayPct + '%'
+    document.getElementById('s-7d').textContent = fmtPct(D.sevenDayPct)
   }
   const elapsed = D.generatedAt - D.sessionStart
   const remaining = D.sessionEnd - D.generatedAt
@@ -165,7 +166,7 @@ function renderChart() {
   const xNow = xs(D.generatedAt)
   el('line', { x1: xNow, y1: PAD.t, x2: xNow, y2: H - PAD.b, stroke: '#e0af68', 'stroke-width': 1 }, chart)
   const nt = el('text', { x: xNow + 4, y: PAD.t + 10, fill: '#e0af68', 'font-size': 10 }, chart)
-  nt.textContent = 'now (' + (D.currentPct != null ? D.currentPct + '%' : 'no data') + ')'
+  nt.textContent = 'now (' + fmtPct(D.currentPct) + ')'
   let p1 = '', p2 = ''
   wPoints.forEach((s, i) => { p1 += (i === 0 ? 'M' : 'L') + xs(s.ts) + ',' + y1(s.w) + ' ' })
   D.series.forEach((s, i) => { p2 += (i === 0 ? 'M' : 'L') + xs(s.ts) + ',' + y2(s.cumPrompts) + ' ' })

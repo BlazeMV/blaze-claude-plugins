@@ -14,7 +14,7 @@ const DEFAULTS = {
   port: 7373,
   source: 'auto',
   downstream_statusline: null,
-  refresh_ms: 2500,
+  refresh_ms: 2000,
 }
 
 export function readConfig() {
@@ -33,4 +33,8 @@ export function writeConfig(cfg) {
 
 export function ensureCacheDir() {
   fs.mkdirSync(CACHE_DIR, { recursive: true })
+}
+
+export function ensureConfig() {
+  if (!fs.existsSync(CONFIG_PATH)) writeConfig({})
 }
