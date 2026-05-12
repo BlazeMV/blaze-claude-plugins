@@ -1,0 +1,6 @@
+{
+  "name": "claude-timeline",
+  "version": "0.1.0",
+  "description": "Live web dashboard of Claude Code 5h-session usage and per-prompt cost. Reads Anthropic rate-limit headers via a statusLine wrapper (independent cache).",
+  "author": { "name": "blaze" }
+}

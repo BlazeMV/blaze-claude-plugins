@@ -1,0 +1,19 @@
+{
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
+  "name": "blaze-claude-plugins",
+  "description": "Claude Code plugins by BlazeMV",
+  "owner": {
+    "name": "BlazeMV",
+    "url": "https://github.com/BlazeMV"
+  },
+  "plugins": [
+    {
+      "name": "claude-timeline",
+      "description": "Live web dashboard of Claude Code 5h-session usage and per-prompt cost. Captures Anthropic rate-limit headers via a statusLine wrapper; chains transparently through any existing statusLine (e.g. leeguooooo/claude-code-usage-bar).",
+      "author": { "name": "BlazeMV" },
+      "category": "productivity",
+      "source": "./plugins/claude-timeline",
+      "homepage": "https://github.com/BlazeMV/blaze-claude-plugins/tree/main/plugins/claude-timeline"
+    }
+  ]
+}
