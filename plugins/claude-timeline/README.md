@@ -2,7 +2,15 @@
 
 Live web dashboard of your Claude Code 5-hour session usage and per-prompt cost. See exactly which prompt is eating your rate-limit budget, in real time.
 
-<!-- Add screenshots here: docs/screenshot-dashboard.png, docs/screenshot-tooltip.png, etc. -->
+![claude-timeline dashboard](./docs/screenshot-hero.png)
+
+<sub>↑ Demo data. The dashboard updates live every 2 seconds via Server-Sent Events.</sub>
+
+## Full view
+
+The page below the chart lists every prompt in the current session, sortable by time, cost, or token count — click any column header to re-sort.
+
+![full dashboard with prompt table](./docs/screenshot-dashboard.png)
 
 ## What it shows
 

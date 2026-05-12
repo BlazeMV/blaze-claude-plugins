@@ -24,6 +24,8 @@ Restart Claude Code (or `/reload-plugins`) after installing.
 
 Live web dashboard of your Claude Code 5-hour session usage and per-prompt cost. Pinned to Anthropic's actual rate-limit headers — see exactly which prompt is eating your budget, in real time.
 
+![claude-timeline preview](./plugins/claude-timeline/docs/screenshot-hero.png)
+
 - **Real-time chart** of cumulative usage % and prompt count over the 5h window
 - **Per-prompt cost ranking** in a sortable table
 - **Projected exhaustion time** at current burn rate
